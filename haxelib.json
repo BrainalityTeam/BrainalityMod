@@ -1,0 +1,14 @@
+{
+  "name": "BrainalityMod",
+  "url" : "https://github.com/BrainalityTeam/BrainalityMod",
+  "license": "MIT",
+  "tags": ["mod", "game"],
+  "description": "BrainalityMod",
+  "version": "1.0.0",
+  "classPath": "source/",
+  "releasenote": "",
+  "contributors": ["Brainy7890"],
+  "dependencies": {
+    "hscript-iris": ""
+  }
+}

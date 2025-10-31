@@ -1,2 +1,2 @@
 # BrainalityMod
-Mod framework for Brainality, but designed to work for any kind of project.
+Mod framework for FNF Brainality Engine, but designed to work for any kind of project.

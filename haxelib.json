@@ -3,7 +3,7 @@
   "url" : "https://github.com/BrainalityTeam/BrainalityMod",
   "license": "MIT",
   "tags": ["mod", "game"],
-  "description": "BrainalityMod",
+  "description": "Mod framework for FNF Brainality Engine, but designed to work for any kind of project.",
   "version": "1.0.0",
   "classPath": "source/",
   "releasenote": "",

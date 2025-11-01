@@ -1,0 +1,8 @@
+{
+    "name": "test mod",
+    "description": "it's a test mod",
+    "authors": [],
+    "version": "1.0.0",
+    "apiVersion": "0.1.0",
+    "gameID": "flixeltest"
+}

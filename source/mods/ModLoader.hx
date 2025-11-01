@@ -36,7 +36,7 @@ typedef ModMeta = {
 class ModLoader
 {
     public static var GAME_ID = null;
-    public static var path:String = "./mods/";
+    public static var path:String = "mods/";
     public static var metaFile:String = "meta.json";
     public static var minimumApiVersion:SemVer = new SemVer("0.0.0");
     public static var apiVersion:SemVer = new SemVer("0.1.0");
@@ -57,8 +57,8 @@ class ModLoader
 
     public static function getMod(modPath:String):Null<ModMeta>
     {
-        var fullPath = '${path}${modPath.trim()}/${metaFile}';
-
+        var fullPath = '${path}${modPath.trim()}${metaFile}';
+        trace(fullPath);
         try {
             if (FileSystem.exists(fullPath))
             {
@@ -73,6 +73,13 @@ class ModLoader
                     gameID: data.gameID,
                     dependencies: data.dependencies
                 };
+
+                if (data.customFields != null)
+                    mod.customFields = data.customFields;
+                if (data.gameID != null)
+                    mod.gameID = data.gameID;
+                if (data.dependencies != null)
+                    mod.dependencies = data.dependencies;
 
                 var vers:SemVer = new SemVer(mod.apiVersion);
 

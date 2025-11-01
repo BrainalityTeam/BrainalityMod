@@ -1,10 +1,18 @@
 package;
 
+import mods.ModLoader;
 import openfl.display.Sprite;
 import flixel.FlxGame;
 class Main extends Sprite
 {
-    static function main() {
-        addChild(new FlxGame(0, 0, PlayState));
+    override public function new() {
+        super();
+        ModLoader.init({
+            framework: "flixel",
+            assetsPath: "assets/",
+            gameID: "flixeltest"
+        });
+
+        addChild(new FlxGame(0, 0, PlayState, 60, 60, true));
     }
 }

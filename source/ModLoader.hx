@@ -1,11 +1,21 @@
 package;
 
+import sys.net.Address;
+import utils.SemVer;
 import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
 
+import util.SemVer;
+
 using StringTools;
 
+typedef LoaderConfig =
+{
+    var framework:String;
+    var assetsPath:String;
+    @:optional var gameID:String;
+}
 typedef CustomField = {
     var name:String;
     var value:Dynamic;
@@ -20,7 +30,7 @@ typedef ModMeta = {
     var authors:Array<String>;
     var version:String;
     var apiVersion:String;
-    var customFields:Array<CustomField>;
+    @:optional var customFields:Array<CustomField>;
     @:optional var gameID:String;
     @:optional var dependencies:Array<Dependency>;
 }
@@ -30,10 +40,22 @@ class ModLoader
     public static var GAME_ID = null;
     public static var path:String = "./mods/";
     public static var metaFile:String = "meta.json";
+    public static var minimumApiVersion:SemVer = new SemVer("0.0.0");
+    public static var apiVersion:SemVer = new SemVer("0.1.0");
     public static var enabledMods:Map<String, Bool> = new Map();
+    public static var paths:Map<String, String> = new Map();
+    public static var assets:Assets = null;
 
-    public inline static function enable(mod:String) enabledMods.set(mod, true);
+    public inline static function enable(mod:String)  enabledMods.set(mod, true);
+
     public inline static function disable(mod:String) enabledMods.set(mod, false);
+
+    public static function checkGameID(id:String):Bool
+    {
+        if (GAME_ID == null || GAME_ID == "") return true;
+
+        return (GAME_ID == id);
+    }
 
     public static function getMod(modPath:String):Null<ModMeta>
     {
@@ -53,8 +75,14 @@ class ModLoader
                     gameID: data.gameID,
                     dependencies: data.dependencies
                 };
-                enabledMods.set(mod.name, true);
-                return mod;
+
+                var vers:SemVer = new SemVer(mod.apiVersion);
+
+                if (checkGameID(mod.gameID) && vers.isAtLeast(minimumApiVersion))
+                {
+                    enabledMods.set(mod.name, true);
+                    return mod;
+                } else return null;
             }
             else 
                 return null;
@@ -89,11 +117,73 @@ class ModLoader
         return mods;
     }
 
-    public static function init()
+    public static function init(config:LoaderConfig)
     {
+        GAME_ID = config.gameID;
         for (mod in getMods())
         {
             trace('Loaded mod: ${mod.name} ${mod.version}');
         }
+
+        assets = new Assets(config.framework, config.assetsPath);
+    }
+}
+
+class Assets
+{
+    public var framework:String;
+    public var assetsPath:String;
+
+    public function new(framework:String, assetsPath:String) 
+    {
+        this.framework = framework;
+        this.assetsPath = assetsPath;
+    }
+
+    public function getPath(path:String)#if sys :String #else :Null #end
+    {
+        #if sys
+        var finalPath:String = '${assetsPath}${path}';
+
+        for (mod in ModLoader.getMods())
+        {
+            var curPath = ModLoader.paths.get(mod.name);
+            if (FileSystem.exists(curPath))
+                finalPath = curPath;
+        }
+
+        return finalPath;
+        #else
+        throw 'Function only available in sys target!';
+        return null;
+        #end
+    }
+
+    public function getText(path:String)#if sys :String #else :Null #end
+    {
+        //this function is framework independent yaya
+        //for now this function only works in sys targets. Hopefully not a problem.
+        #if sys        
+        return File.getContent(getPath(path));
+        #else
+        throw 'Function only available in sys target!';
+        return null;
+        #end
+    }
+
+    public function getJSON(path:String) #if sys :Dynamic #else :Null #end
+    {
+        #if sys
+        try 
+        {
+            return Json.parse(getText(path));
+        } catch (e:Dynamic)
+        {
+            haxe.Log.trace('Error parsing JSON at ' + path);
+        }
+        #else
+        throw 'Function only available in sys target!';
+        return null;
+        #end
     }
 }

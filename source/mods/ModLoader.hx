@@ -1,4 +1,4 @@
-package;
+package mods;
 
 import sys.net.Address;
 import utils.SemVer;

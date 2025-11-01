@@ -1,2 +1,6 @@
 package;
 
+class PlayState
+{
+    
+}

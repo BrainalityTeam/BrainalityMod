@@ -1,0 +1,4 @@
+--class-path source
+--times
+--python bin/main.py
+--main Main

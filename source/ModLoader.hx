@@ -6,8 +6,6 @@ import haxe.Json;
 import sys.io.File;
 import sys.FileSystem;
 
-import util.SemVer;
-
 using StringTools;
 
 typedef LoaderConfig =
@@ -180,6 +178,7 @@ class Assets
         } catch (e:Dynamic)
         {
             haxe.Log.trace('Error parsing JSON at ' + path);
+            return null;
         }
         #else
         throw 'Function only available in sys target!';
